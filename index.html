@@ -139,6 +139,105 @@ question.value="";
 
 addMessage("AI серверімен байланыс модулі қосылуда...","ai");
 });
-</script>
+
+const messages = document.getElementById("messages");
+const question = document.getElementById("question");
+
+let history = JSON.parse(
+  localStorage.getItem("nur_ai_history") || "[]"
+);
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function saveHistory() {
+  localStorage.setItem(
+    "nur_ai_history",
+    JSON.stringify(history)
+  );
+}
+
+function newChat() {
+  history = [];
+  saveHistory();
+  messages.innerHTML = "";
+  addMessage("Жаңа әңгіме басталды!", "ai");
+}
+
+function showHistory() {
+  messages.innerHTML = "";
+  if (!history.length) {
+    addMessage("Әзірге тарих бос.", "ai");
+    return;
+  }
+
+  history.forEach(item => {
+    addMessage(
+      item.parts[0].text,
+      item.role === "user" ? "user" : "ai"
+    );
+  });
+}
+
+document.getElementById("chatForm")
+.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const text = question.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  question.value = "";
+
+  const loading = document.createElement("div");
+  loading.className = "message ai";
+  loading.textContent = "NUR AI ойланып жатыр...";
+  messages.appendChild(loading);
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text,
+        history: history
+      })
+    });
+
+    const data = await response.json();
+    loading.remove();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Сервер қатесі");
+    }
+
+    addMessage(data.answer, "ai");
+
+    history.push(
+      { role: "user", parts: [{ text }] },
+      { role: "model", parts: [{ text: data.answer }] }
+    );
+
+    history = history.slice(-20);
+    saveHistory();
+
+  } catch (error) {
+    loading.textContent = "Қате: " + error.message;
+  }
+});
+
+history.forEach(item => {
+  addMessage(
+    item.parts[0].text,
+    item.role === "user" ? "user" : "ai"
+  );
+});
 </body>
 </html>
