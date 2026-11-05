@@ -1,0 +1,12 @@
+{
+  "name": "nur-ai-pro",
+  "version": "1.0.0",
+  "description": "NUR AI PRO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
