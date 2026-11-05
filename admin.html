@@ -1,265 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="kk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NUR AI ADMIN</title>
+
 <style>
-*{box-sizing:border-box}
-body{
-margin:0;
-background:#080610;
-color:white;
-font-family:Arial,sans-serif;
+* {
+  box-sizing: border-box;
 }
-header{
-padding:20px;
-background:#130b20;
-border-bottom:1px solid #692ca0;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #080510;
+  color: white;
+  font-family: Arial, sans-serif;
 }
-h2{color:#c18aff;margin:0}
-.layout{display:flex;min-height:100vh}
-aside{
-width:230px;
-padding:20px;
-background:#100b19;
-border-right:1px solid #30203e;
+
+.container {
+  max-width: 650px;
+  margin: 40px auto;
+  padding: 25px;
+  background: #171027;
+  border: 1px solid #792dce;
+  border-radius: 18px;
+  box-shadow: 0 0 25px #54208b;
 }
-button{
-background:#792bc1;
-border:0;
-color:white;
-padding:12px;
-border-radius:9px;
-cursor:pointer;
+
+h1 {
+  color: #c18aff;
+  text-align: center;
 }
-aside button{width:100%;margin:8px 0}
-main{padding:22px;flex:1;min-width:0}
-.card{
-background:#171020;
-border:1px solid #48245f;
-border-radius:14px;
-padding:18px;
-margin-bottom:18px;
+
+#status {
+  text-align: center;
+  color: #a9ffbd;
 }
-input{
-width:100%;
-padding:13px;
-background:#0d0914;
-color:white;
-border:1px solid #63348c;
-border-radius:9px;
-margin:10px 0;
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin: 15px 0;
+  background: #090612;
+  border: 1px solid #8c43db;
+  color: white;
+  border-radius: 10px;
 }
-#result{
-background:#0d0914;
-padding:15px;
-border-radius:9px;
-min-height:50px;
-white-space:pre-wrap;
-overflow-wrap:anywhere;
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: #792dce;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
 }
-.status{color:#8bffb3}
-@media(max-width:600px){
-aside{width:110px;padding:8px}
-aside button{font-size:11px;padding:9px}
-main{padding:10px}
+
+#result {
+  margin-top: 20px;
+  padding: 15px;
+  background: #090612;
+  border-radius: 10px;
+  min-height: 50px;
+  white-space: pre-wrap;
 }
 </style>
 </head>
+
 <body>
 
-<header>
-<h2>✦ NUR AI ADMIN</h2>
-<span class="status">● ADMIN PANEL</span>
-</header>
+<div class="container">
+  <h1>NUR AI ADMIN</h1>
 
-<div class="layout">
-<aside>
-<button onclick="showSection('dashboard')">Dashboard</button>
-<button onclick="showSection('commands')">Commands</button>
-<button onclick="showSection('settings')">Settings</button>
-<button onclick="location.href='/'">NUR AI</button>
-</aside>
+  <p id="status">Сервер тексерілуде...</p>
 
-<main>
-<section id="dashboard">
-<div class="card">
-  <h3>Жүйе жағдайы</h3>
-  <p id="serverStatus">Тексерілуде...</p>
-  <button onclick="checkStatus()">Жүйені тексеру</button>
-</div>
-<div class="card">
-  <h3>Басқару орталығы</h3>
-  <p>NUR AI PRO басқару жүйесіне қош келдің!</p>
-</div>
-</section>
+  <h3>Басқару командалары</h3>
 
-<section id="commands" hidden>
-<div class="card">
-  <h3>Командалар орталығы</h3>
-  <input id="command" placeholder="Команда енгіз...">
-  <div class="quick-commands">
-  <button onclick="runQuickCommand('status')">
-    Жүйе күйі
+  <input
+    id="command"
+    placeholder="Команда енгізіңіз..."
+  >
+
+  <button onclick="sendCommand()">
+    КОМАНДАНЫ ОРЫНДАУ
   </button>
 
-  <button onclick="runQuickCommand('info')">
-    Жүйе ақпараты
-  </button>
-
-  <button onclick="runQuickCommand('maintenance-on')">
-    Техникалық режимді қосу
-  </button>
-
-  <button onclick="runQuickCommand('maintenance-off')">
-    Техникалық режимді өшіру
-  </button>
-</div>
-  async function sendCommand(){
- const command = document.getElementById("command").value.trim();
- const result = document.getElementById("result");
-
- if(!command){
-   result.textContent = "Команда енгіз!";
-   return;
- }
-
- const secret = prompt("ADMIN құпия кілтін енгіз:");
-
- if(!secret) return;
-
- result.textContent = "Орындалып жатыр...";
-
- try{
-   const response = await fetch("/api/admin/command", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "x-admin-secret": secret
-     },
-     body: JSON.stringify({command})
-   });
-
-   const data = await response.json();
-
-   result.textContent = data.message || data.error;
-
- }catch(error){
-   result.textContent = "Сервермен байланыс қатесі.";
- }
-}
-  <p id="result">Нәтиже осында шығады.</p>
-</div>
-</section>
-
-<section id="settings" hidden>
-<div class="card">
-  <h3>Жүйе баптаулары</h3>
-  <input id="siteName" placeholder="Жаңа сайт атауы">
-  <button onclick="saveName()">Атауды өзгерту</button>
-  <p id="settingsResult"></p>
-</div>
-</section>
-</main>
+  <div id="result">Жауап күтілуде...</div>
 </div>
 
 <script>
-function showSection(id){
-document.querySelectorAll("main section")
-.forEach(section=>section.hidden=true);
-document.getElementById(id).hidden=false;
+async function checkStatus() {
+  try {
+    const response = await fetch("/status");
+    const data = await response.json();
+
+    document.getElementById("status").textContent =
+      data.name + " — " + data.status;
+  } catch (error) {
+    document.getElementById("status").textContent =
+      "Серверге қосылмады";
+  }
 }
 
-async function checkStatus() {
-  const el = document.getElementById("serverStatus");
-  el.textContent = "Тексерілуде...";
+async function sendCommand() {
+  const command =
+    document.getElementById("command").value.trim();
+
+  if (!command) {
+    return;
+  }
+
+  const result = document.getElementById("result");
+
+  result.textContent = "Команда орындалуда...";
 
   try {
-    const response = await fetch("/api/status", {
-      cache: "no-store"
+    const response = await fetch("/admin/command", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ command })
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || "Қате");
-    }
-
-    el.textContent =
-      "Жүйе: " + data.name +
-      "\nКүйі: " + data.status +
-      "\nНұсқасы: " + data.version +
-      "\nЯдро: " + data.core +
-      "\nТехникалық режим: " +
-      (data.maintenance ? "Қосулы" : "Өшірулі");
-
+    result.textContent = data.message;
   } catch (error) {
-    el.textContent = "Сервермен байланыс жоқ.";
+    result.textContent = "Қате: серверге қосылмады.";
   }
-}
-const el=document.getElementById("serverStatus");
-el.textContent="Тексерілуде...";
-try{
-  const response=await fetch("/api/status");
-  const data=await response.json();
-  if(!response.ok) throw new Error(data.error||"Қате");
-  el.textContent=JSON.stringify(data,null,2);
-}catch(error){
-  el.textContent="Сервер әлі толық қосылмаған.";
-}
-}
-
-async function sendCommand(){
-const command=document.getElementById("command").value.trim();
-const result=document.getElementById("result");
-if(!command){
-  result.textContent="Команда енгіз!";
-  return;
-}
-result.textContent="Орындалып жатыр...";
-try{
-  const response=await fetch("/api/admin/command",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({command})
-  });
-  const data=await response.json();
-  result.textContent=data.message||data.error||JSON.stringify(data);
-}catch(error){
-  result.textContent="Сервермен байланыс жоқ.";
-}
-}
-
-async function saveName() {
-  const name = document.getElementById("siteName").value.trim();
-  const result = document.getElementById("settingsResult");
-
-  if (!name) {
-    result.textContent = "Атау енгіз!";
-    return;
-  }
-
-  result.textContent = "Сақтау модулі әзірленуде...";
-
-  result.textContent =
-    "Атау: " + name +
-    ". Келесі кезеңде серверге сақтауды қосамыз.";
-}
-const name=document.getElementById("siteName").value.trim();
-const result=document.getElementById("settingsResult");
-if(!name){
-  result.textContent="Атау енгіз!";
-  return;
-}
-result.textContent="Баптау API модулі әлі қосылған жоқ.";
 }
 
 checkStatus();
 </script>
+
 </body>
 </html>
