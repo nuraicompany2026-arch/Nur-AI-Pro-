@@ -1,8 +1,8 @@
-
 const NUR_AI = {
   name: "NUR AI PRO",
   version: "1.0.0",
   maintenance: false,
+
   commands: {},
 
   execute(command) {
@@ -27,6 +27,7 @@ NUR_AI.commands = {
 
   "maintenance-on": (context) => {
     context.maintenance = true;
+
     return {
       success: true,
       message: "Техникалық қызмет көрсету режимі қосылды."
@@ -35,6 +36,7 @@ NUR_AI.commands = {
 
   "maintenance-off": (context) => {
     context.maintenance = false;
+
     return {
       success: true,
       message: "Техникалық қызмет көрсету режимі өшірілді."
