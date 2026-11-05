@@ -156,10 +156,14 @@ function addMessage(text, type) {
 }
 
 function saveHistory() {
-  localStorage.setItem(
-    "nur_ai_history",
-    JSON.stringify(history)
-  );
+  try {
+    localStorage.setItem(
+      "nur_ai_history",
+      JSON.stringify(history.slice(-100))
+    );
+  } catch (error) {
+    console.error("Тарихты сақтау қатесі:", error);
+  }
 }
 
 function newChat() {
