@@ -103,7 +103,39 @@ main{padding:10px}
 <div class="card">
   <h3>Командалар орталығы</h3>
   <input id="command" placeholder="Команда енгіз...">
-  <button onclick="sendCommand()">Орындау</button>
+  async function sendCommand(){
+ const command = document.getElementById("command").value.trim();
+ const result = document.getElementById("result");
+
+ if(!command){
+   result.textContent = "Команда енгіз!";
+   return;
+ }
+
+ const secret = prompt("ADMIN құпия кілтін енгіз:");
+
+ if(!secret) return;
+
+ result.textContent = "Орындалып жатыр...";
+
+ try{
+   const response = await fetch("/api/admin/command", {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "x-admin-secret": secret
+     },
+     body: JSON.stringify({command})
+   });
+
+   const data = await response.json();
+
+   result.textContent = data.message || data.error;
+
+ }catch(error){
+   result.textContent = "Сервермен байланыс қатесі.";
+ }
+}
   <p id="result">Нәтиже осында шығады.</p>
 </div>
 </section>
