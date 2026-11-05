@@ -158,7 +158,33 @@ document.querySelectorAll("main section")
 document.getElementById(id).hidden=false;
 }
 
-async function checkStatus(){
+async function checkStatus() {
+  const el = document.getElementById("serverStatus");
+  el.textContent = "Тексерілуде...";
+
+  try {
+    const response = await fetch("/api/status", {
+      cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Қате");
+    }
+
+    el.textContent =
+      "Жүйе: " + data.name +
+      "\nКүйі: " + data.status +
+      "\nНұсқасы: " + data.version +
+      "\nЯдро: " + data.core +
+      "\nТехникалық режим: " +
+      (data.maintenance ? "Қосулы" : "Өшірулі");
+
+  } catch (error) {
+    el.textContent = "Сервермен байланыс жоқ.";
+  }
+}
 const el=document.getElementById("serverStatus");
 el.textContent="Тексерілуде...";
 try{
