@@ -1,5 +1,4 @@
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "POST сұранысы қажет"
@@ -9,7 +8,7 @@ export default async function handler(req, res) {
   try {
     const { message, history = [] } = req.body || {};
 
-    if (!message || typeof message !== "string") {
+    if (typeof message !== "string" || !message.trim()) {
       return res.status(400).json({
         error: "Хабарлама бос болмауы керек"
       });
@@ -23,8 +22,16 @@ export default async function handler(req, res) {
       });
     }
 
+    const safeHistory = Array.isArray(history)
+      ? history.slice(-12).filter(item =>
+          ["user", "model"].includes(item.role) &&
+          Array.isArray(item.parts) &&
+          typeof item.parts[0]?.text === "string"
+        )
+      : [];
+
     const contents = [
-      ...history.slice(-12),
+      ...safeHistory,
       {
         role: "user",
         parts: [{ text: message.slice(0, 10000) }]
@@ -42,7 +49,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           systemInstruction: {
             parts: [{
-              text: "Сен NUR AI PRO атты ақылды көмекшісің. Пайдаланушыға түсінікті, пайдалы және шынайы жауап бер. Қазақ тілін жақсы қолдан."
+              text: "Сен NUR AI PRO атты ақылды көмекшісің. Қазақ тілінде анық, пайдалы және шынайы жауап бер."
             }]
           },
           contents,
@@ -63,11 +70,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const answer =
-      data.candidates?.[0]?.content?.parts
-        ?.map(part => part.text || "")
-        .join("")
-        .trim();
+    const answer = data.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("")
+      .trim();
 
     if (!answer) {
       return res.status(502).json({
@@ -86,4 +92,4 @@ export default async function handler(req, res) {
       error: "Сервер қатесі"
     });
   }
-}
+};
