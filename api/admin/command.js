@@ -1,4 +1,3 @@
-
 const NUR_AI = require("../../core");
 
 module.exports = function handler(req, res) {
@@ -21,10 +20,20 @@ module.exports = function handler(req, res) {
 
   const { command } = req.body || {};
 
-  if (typeof command !== "string" || command.length > 50) {
+  const allowedCommands = [
+    "status",
+    "info",
+    "maintenance-on",
+    "maintenance-off"
+  ];
+
+  if (
+    typeof command !== "string" ||
+    !allowedCommands.includes(command.trim())
+  ) {
     return res.status(400).json({
       success: false,
-      error: "Команда дұрыс емес"
+      error: "Белгісіз немесе рұқсат етілмеген команда"
     });
   }
 
