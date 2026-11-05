@@ -192,7 +192,21 @@ try{
 }
 }
 
-async function saveName(){
+async function saveName() {
+  const name = document.getElementById("siteName").value.trim();
+  const result = document.getElementById("settingsResult");
+
+  if (!name) {
+    result.textContent = "Атау енгіз!";
+    return;
+  }
+
+  result.textContent = "Сақтау модулі әзірленуде...";
+
+  result.textContent =
+    "Атау: " + name +
+    ". Келесі кезеңде серверге сақтауды қосамыз.";
+}
 const name=document.getElementById("siteName").value.trim();
 const result=document.getElementById("settingsResult");
 if(!name){
