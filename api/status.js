@@ -1,3 +1,5 @@
+const NUR_AI = require("../core");
+
 module.exports = function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -11,10 +13,10 @@ module.exports = function handler(req, res) {
   return res.status(200).json({
     success: true,
     status: "connected",
-    name: "NUR AI PRO",
+    name: NUR_AI.name,
     admin: "NUR AI ADMIN",
-    version: "1.0.0",
+    version: NUR_AI.version,
     core: "active",
-    maintenance: false
+    maintenance: NUR_AI.maintenance
   });
 };
