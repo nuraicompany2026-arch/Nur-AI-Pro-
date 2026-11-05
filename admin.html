@@ -103,6 +103,23 @@ main{padding:10px}
 <div class="card">
   <h3>Командалар орталығы</h3>
   <input id="command" placeholder="Команда енгіз...">
+  <div class="quick-commands">
+  <button onclick="runQuickCommand('status')">
+    Жүйе күйі
+  </button>
+
+  <button onclick="runQuickCommand('info')">
+    Жүйе ақпараты
+  </button>
+
+  <button onclick="runQuickCommand('maintenance-on')">
+    Техникалық режимді қосу
+  </button>
+
+  <button onclick="runQuickCommand('maintenance-off')">
+    Техникалық режимді өшіру
+  </button>
+</div>
   async function sendCommand(){
  const command = document.getElementById("command").value.trim();
  const result = document.getElementById("result");
