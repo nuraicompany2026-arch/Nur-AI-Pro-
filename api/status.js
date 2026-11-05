@@ -1,5 +1,4 @@
-
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "GET") {
@@ -18,4 +17,4 @@ export default function handler(req, res) {
     core: "active",
     maintenance: false
   });
-}
+};
