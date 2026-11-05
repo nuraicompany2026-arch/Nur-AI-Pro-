@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUR AI ADMIN</title>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+background:#080610;
+color:white;
+font-family:Arial,sans-serif;
+}
+header{
+padding:20px;
+background:#130b20;
+border-bottom:1px solid #692ca0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+h2{color:#c18aff;margin:0}
+.layout{display:flex;min-height:100vh}
+aside{
+width:230px;
+padding:20px;
+background:#100b19;
+border-right:1px solid #30203e;
+}
+button{
+background:#792bc1;
+border:0;
+color:white;
+padding:12px;
+border-radius:9px;
+cursor:pointer;
+}
+aside button{width:100%;margin:8px 0}
+main{padding:22px;flex:1;min-width:0}
+.card{
+background:#171020;
+border:1px solid #48245f;
+border-radius:14px;
+padding:18px;
+margin-bottom:18px;
+}
+input{
+width:100%;
+padding:13px;
+background:#0d0914;
+color:white;
+border:1px solid #63348c;
+border-radius:9px;
+margin:10px 0;
+}
+#result{
+background:#0d0914;
+padding:15px;
+border-radius:9px;
+min-height:50px;
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+}
+.status{color:#8bffb3}
+@media(max-width:600px){
+aside{width:110px;padding:8px}
+aside button{font-size:11px;padding:9px}
+main{padding:10px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h2>✦ NUR AI ADMIN</h2>
+<span class="status">● ADMIN PANEL</span>
+</header>
+
+<div class="layout">
+<aside>
+<button onclick="showSection('dashboard')">Dashboard</button>
+<button onclick="showSection('commands')">Commands</button>
+<button onclick="showSection('settings')">Settings</button>
+<button onclick="location.href='/'">NUR AI</button>
+</aside>
+
+<main>
+<section id="dashboard">
+<div class="card">
+  <h3>Жүйе жағдайы</h3>
+  <p id="serverStatus">Тексерілуде...</p>
+  <button onclick="checkStatus()">Жүйені тексеру</button>
+</div>
+<div class="card">
+  <h3>Басқару орталығы</h3>
+  <p>NUR AI PRO басқару жүйесіне қош келдің!</p>
+</div>
+</section>
+
+<section id="commands" hidden>
+<div class="card">
+  <h3>Командалар орталығы</h3>
+  <input id="command" placeholder="Команда енгіз...">
+  <button onclick="sendCommand()">Орындау</button>
+  <p id="result">Нәтиже осында шығады.</p>
+</div>
+</section>
+
+<section id="settings" hidden>
+<div class="card">
+  <h3>Жүйе баптаулары</h3>
+  <input id="siteName" placeholder="Жаңа сайт атауы">
+  <button onclick="saveName()">Атауды өзгерту</button>
+  <p id="settingsResult"></p>
+</div>
+</section>
+</main>
+</div>
+
+<script>
+function showSection(id){
+document.querySelectorAll("main section")
+.forEach(section=>section.hidden=true);
+document.getElementById(id).hidden=false;
+}
+
+async function checkStatus(){
+const el=document.getElementById("serverStatus");
+el.textContent="Тексерілуде...";
+try{
+  const response=await fetch("/api/status");
+  const data=await response.json();
+  if(!response.ok) throw new Error(data.error||"Қате");
+  el.textContent=JSON.stringify(data,null,2);
+}catch(error){
+  el.textContent="Сервер әлі толық қосылмаған.";
+}
+}
+
+async function sendCommand(){
+const command=document.getElementById("command").value.trim();
+const result=document.getElementById("result");
+if(!command){
+  result.textContent="Команда енгіз!";
+  return;
+}
+result.textContent="Орындалып жатыр...";
+try{
+  const response=await fetch("/api/admin/command",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({command})
+  });
+  const data=await response.json();
+  result.textContent=data.message||data.error||JSON.stringify(data);
+}catch(error){
+  result.textContent="Сервермен байланыс жоқ.";
+}
+}
+
+async function saveName(){
+const name=document.getElementById("siteName").value.trim();
+const result=document.getElementById("settingsResult");
+if(!name){
+  result.textContent="Атау енгіз!";
+  return;
+}
+result.textContent="Баптау API модулі әлі қосылған жоқ.";
+}
+
+checkStatus();
+</script>
+</body>
+</html>
