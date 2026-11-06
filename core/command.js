@@ -1,18 +1,49 @@
+const fs = require("fs");
+const path = require("path");
 
-const state = {
+const settingsFile = path.join(__dirname, "../database/settings.json");
+
+const defaultSettings = {
   maintenance: false,
   announcement: "",
   siteName: "NUR AI PRO"
 };
 
+function readSettings() {
+  try {
+    if (!fs.existsSync(settingsFile)) {
+      fs.writeFileSync(
+        settingsFile,
+        JSON.stringify(defaultSettings, null, 2)
+      );
+    }
+
+    return {
+      ...defaultSettings,
+      ...JSON.parse(fs.readFileSync(settingsFile, "utf8"))
+    };
+  } catch {
+    return { ...defaultSettings };
+  }
+}
+
+function saveSettings(settings) {
+  fs.writeFileSync(
+    settingsFile,
+    JSON.stringify(settings, null, 2),
+    "utf8"
+  );
+}
+
 function run(command) {
   const c = String(command || "").trim();
+  const settings = readSettings();
 
   if (c === "status") {
     return {
       success: true,
-      message: "Жүйе жұмыс істеп тұр.",
-      state: { ...state }
+      message: "NUR AI PRO жүйесі жұмыс істеп тұр.",
+      state: settings
     };
   }
 
@@ -25,7 +56,8 @@ function run(command) {
   }
 
   if (c === "maintenance-on") {
-    state.maintenance = true;
+    settings.maintenance = true;
+    saveSettings(settings);
 
     return {
       success: true,
@@ -34,7 +66,8 @@ function run(command) {
   }
 
   if (c === "maintenance-off") {
-    state.maintenance = false;
+    settings.maintenance = false;
+    saveSettings(settings);
 
     return {
       success: true,
@@ -43,16 +76,20 @@ function run(command) {
   }
 
   if (c.startsWith("title ")) {
-    state.siteName = c.slice(6, 80);
+    settings.siteName = c.slice(6).trim().slice(0, 80);
+
+    saveSettings(settings);
 
     return {
       success: true,
-      message: "Сайт атауы: " + state.siteName
+      message: "Жаңа атау: " + settings.siteName
     };
   }
 
   if (c.startsWith("announce ")) {
-    state.announcement = c.slice(9, 250);
+    settings.announcement = c.slice(9).trim().slice(0, 250);
+
+    saveSettings(settings);
 
     return {
       success: true,
@@ -66,7 +103,4 @@ function run(command) {
   };
 }
 
-module.exports = {
-  run,
-  state
-};
+module.exports = { run, readSettings };
