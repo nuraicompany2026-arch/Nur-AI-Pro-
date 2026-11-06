@@ -1,0 +1,12 @@
+
+NUR AI PRO SECURITY
+
+Әкімші кілтін server environment variable
+арқылы орнатыңыз.
+
+Айнымалы атауы:
+
+NUR_ADMIN_KEY
+
+Әкімші кілтін GitHub репозиторийіне
+ашық түрде жарияламаңыз.
