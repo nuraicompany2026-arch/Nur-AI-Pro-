@@ -1,140 +1,68 @@
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NUR AI ADMIN</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<style>
-* {
-  box-sizing: border-box;
-}
+  <title>NUR AI ADMIN</title>
 
-body {
-  margin: 0;
-  padding: 20px;
-  background: #080510;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-.container {
-  max-width: 650px;
-  margin: 40px auto;
-  padding: 25px;
-  background: #171027;
-  border: 1px solid #792dce;
-  border-radius: 18px;
-  box-shadow: 0 0 25px #54208b;
-}
-
-h1 {
-  color: #c18aff;
-  text-align: center;
-}
-
-#status {
-  text-align: center;
-  color: #a9ffbd;
-}
-
-input {
-  width: 100%;
-  padding: 15px;
-  margin: 15px 0;
-  background: #090612;
-  border: 1px solid #8c43db;
-  color: white;
-  border-radius: 10px;
-}
-
-button {
-  width: 100%;
-  padding: 15px;
-  background: #792dce;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
-#result {
-  margin-top: 20px;
-  padding: 15px;
-  background: #090612;
-  border-radius: 10px;
-  min-height: 50px;
-  white-space: pre-wrap;
-}
-</style>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
-<div class="container">
-  <h1>NUR AI ADMIN</h1>
+<header>
+  <h1>⚙ NUR AI ADMIN</h1>
+  <a href="/">Чатқа қайту</a>
+</header>
 
-  <p id="status">Сервер тексерілуде...</p>
+<main class="wrap">
 
-  <h3>Басқару командалары</h3>
+  <section class="panel">
 
-  <input
-    id="command"
-    placeholder="Команда енгізіңіз..."
-  >
+    <h2>Басқару панелі</h2>
 
-  <button onclick="sendCommand()">
-    КОМАНДАНЫ ОРЫНДАУ
-  </button>
+    <p class="hint">
+      NUR AI PRO әкімшілік басқару жүйесі
+    </p>
 
-  <div id="result">Жауап күтілуде...</div>
-</div>
+    <label for="key">Әкімші кілті</label>
 
-<script>
-async function checkStatus() {
-  try {
-    const response = await fetch("/status");
-    const data = await response.json();
+    <input
+      id="key"
+      type="password"
+      placeholder="Әкімші кілті">
 
-    document.getElementById("status").textContent =
-      data.name + " — " + data.status;
-  } catch (error) {
-    document.getElementById("status").textContent =
-      "Серверге қосылмады";
-  }
-}
+    <br><br>
 
-async function sendCommand() {
-  const command =
-    document.getElementById("command").value.trim();
+    <label for="command">Команда</label>
 
-  if (!command) {
-    return;
-  }
+    <input
+      id="command"
+      placeholder="help немесе status">
 
-  const result = document.getElementById("result");
+    <br><br>
 
-  result.textContent = "Команда орындалуда...";
+    <button id="run">
+      Орындау
+    </button>
 
-  try {
-    const response = await fetch("/admin/command", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ command })
-    });
+    <pre id="result" class="msg bot">
+Нәтиже осында шығады.
+    </pre>
 
-    const data = await response.json();
+    <p class="hint">
+      Әкімші кілтін ешкімге берме.
+    </p>
 
-    result.textContent = data.message;
-  } catch (error) {
-    result.textContent = "Қате: серверге қосылмады.";
-  }
-}
+  </section>
 
-checkStatus();
-</script>
+</main>
+
+<script src="/admin/admin.js"></script>
 
 </body>
 </html>
+
