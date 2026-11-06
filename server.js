@@ -24,7 +24,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin.html"));
+  
+app.get("/admin/admin.js", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "admin", "admin.js")
+  );
+});
+res.sendFile(path.join(__dirname, "admin.html"));
 });
 
 app.get("/status", (req, res) => {
