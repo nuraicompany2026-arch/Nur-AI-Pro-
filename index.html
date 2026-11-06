@@ -1,260 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NUR AI PRO</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<style>
-*{box-sizing:border-box}
+  <title>NUR AI PRO</title>
 
-body{
-margin:0;
-background:#090711;
-color:white;
-font-family:Arial,sans-serif;
-}
-
-header{
-padding:18px;
-background:#120c20;
-border-bottom:1px solid #54218a;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-font-size:23px;
-font-weight:bold;
-color:#c38aff;
-}
-
-#status{
-font-size:12px;
-color:#9bffba;
-}
-
-.layout{
-display:flex;
-min-height:calc(100vh - 65px);
-}
-
-aside{
-width:230px;
-background:#100b19;
-padding:18px;
-border-right:1px solid #29203a;
-}
-
-button{
-border:0;
-border-radius:10px;
-padding:12px;
-color:white;
-background:#7629bd;
-cursor:pointer;
-}
-
-aside button{
-width:100%;
-margin-bottom:12px;
-}
-
-main{
-flex:1;
-display:flex;
-flex-direction:column;
-padding:20px;
-min-width:0;
-}
-
-#messages{
-flex:1;
-min-height:55vh;
-overflow:auto;
-padding:10px;
-}
-
-.message{
-padding:14px;
-margin:12px 0;
-border-radius:12px;
-max-width:85%;
-white-space:pre-wrap;
-line-height:1.5;
-}
-
-.user{
-background:#442078;
-margin-left:auto;
-}
-
-.ai{
-background:#191327;
-border:1px solid #47266a;
-}
-
-form{
-display:flex;
-gap:10px;
-}
-
-input{
-flex:1;
-min-width:0;
-padding:15px;
-border-radius:12px;
-border:1px solid #63369a;
-background:#171121;
-color:white;
-outline:none;
-}
-
-button:disabled{
-opacity:0.5;
-}
-
-@media(max-width:600px){
-aside{
-width:105px;
-padding:10px;
-}
-aside button{
-font-size:11px;
-padding:9px;
-}
-main{
-padding:10px;
-}
-}
-</style>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
 <header>
-<div class="logo">✦ NUR AI PRO</div>
-<div id="status">● AI PLATFORM</div>
+  <h1>✦ NUR AI PRO</h1>
+  <span class="status" id="status">
+    API-сіз режим
+  </span>
 </header>
 
-<div class="layout">
+<main class="wrap">
 
-<aside>
-<button onclick="newChat()">+ Жаңа чат</button>
-<button onclick="location.href='/admin.html'">ADMIN</button>
-<button onclick="showHistory()">Тарих</button>
-</aside>
+  <section class="panel">
 
-<main>
+    <h2>AI Chat</h2>
 
-<div id="messages">
-<div class="message ai">
-Сәлем! Мен NUR AI PRO.
-Саған қалай көмектесе аламын?
-</div>
-</div>
+    <p class="hint">
+      Жергілікті көмекші ядро • Қазақша интерфейс
+    </p>
 
-<form id="chatForm">
-<input
-id="question"
-placeholder="NUR AI-ға хабарлама жаз..."
-autocomplete="off"
->
-<button id="sendButton" type="submit">Жіберу</button>
-</form>
+    <div
+      class="messages"
+      id="messages"
+      aria-live="polite">
+    </div>
+
+    <form class="composer" id="chatForm">
+
+      <input
+        id="message"
+        autocomplete="off"
+        maxlength="2000"
+        placeholder="Хабарлама жаз..."
+        required>
+
+      <button type="submit">
+        Жіберу
+      </button>
+
+    </form>
+
+    <div class="links">
+      <a href="/admin">Әкімші панелі</a>
+      <a href="/status" target="_blank">Жүйе күйі</a>
+    </div>
+
+  </section>
 
 </main>
-</div>
 
-<script>
-const messages = document.getElementById("messages");
-const question = document.getElementById("question");
-const statusText = document.getElementById("status");
-const sendButton = document.getElementById("sendButton");
+<script src="/app.js"></script>
 
-const USER_ID = "nursultan";
-
-let history = [];
-
-try {
-  history = JSON.parse(
-    localStorage.getItem("nur_ai_history") || "[]"
-  );
-} catch {
-  history = [];
-}
-
-function addMessage(text, type) {
-  const div = document.createElement("div");
-  div.className = "message " + type;
-  div.textContent = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function saveHistory() {
-  try {
-    localStorage.setItem(
-      "nur_ai_history",
-      JSON.stringify(history.slice(-100))
-    );
-  } catch (error) {
-    console.error("Тарихты сақтау қатесі:", error);
-  }
-}
-
-function newChat() {
-  history = [];
-  saveHistory();
-  messages.innerHTML = "";
-  addMessage("Жаңа әңгіме басталды!", "ai");
-}
-
-function showHistory() {
-  messages.innerHTML = "";
-
-  if (!history.length) {
-    addMessage("Әзірге тарих бос.", "ai");
-    return;
-  }
-
-  history.forEach(item => {
-    addMessage(
-      item.text,
-      item.role === "user" ? "user" : "ai"
-    );
-  });
-}
-
-document.getElementById("chatForm")
-.addEventListener("submit", async (e) => {
-
-  e.preventDefault();
-
-  const text = question.value.trim();
-
-  if (!text || sendButton.disabled) return;
-
-  addMessage(text, "user");
-
-  history.push({
-    role: "user",
-    text: text
-  });
-
-  saveHistory();
-
-  question.value = "";
-
-  const loading = document.createElement("div");
-  loading.className = "message ai";
-  loading.textContent = "NUR AI ойланып жатыр...";
-
-  messages.appendChild(loading);
-
-  sendButton.disabled = true;
-  statusText.textContent = "● ЖҮЙЕ ЖҰМЫС ІСТЕП ТҰР";
-
-  try {
-    const r
+</body>
+</html>
