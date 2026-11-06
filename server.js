@@ -17,6 +17,14 @@ const {
 app.disable("x-powered-by");
 
 app.use(express.json({ limit: "32kb" }));
+app.get("/api/status", (req, res) => {
+  res.json({
+    server: "online",
+    gemini: process.env.GEMINI_API_KEY
+      ? "configured"
+      : "missing"
+  });
+});
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
