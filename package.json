@@ -1,4 +1,8 @@
+const { GoogleGenAI } = require("@google/genai");
 
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY
+});
 {
   "name": "nur-ai-pro",
   "version": "2.0.0",
