@@ -149,7 +149,14 @@ module.exports = { run, readSettings };
 });
 
 app.post("/api/chat", async (req, res) => {
-  try {
+  try {const settings = commands.readSettings();
+
+if (settings.maintenance) {
+  return res.status(503).json({
+    success: false,
+    message: "NUR AI PRO уақытша техникалық қызмет көрсетуде."
+  });
+}
     const message = safeText(
       req.body?.message,
       2000
