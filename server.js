@@ -277,7 +277,40 @@ app.post("/admin/command", (req, res) => {
   res.json(commands.run(command));
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", () => {app.post("/api/chat", async (req, res) => {
+  try {
+    const message = req.body.message;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        error: "Хабарлама бос болмауы керек"
+      });
+    }
+
+    const { GoogleGenAI } = await import("@google/genai");
+
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY
+    });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.8-flash",
+      contents: message
+    });
+
+    res.json({
+      success: true,
+      reply: response.text
+    });
+
+  } catch (error) {
+    console.error("Gemini API error:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI серверінде қате пайда болды"
+    });
+  }
+});
   console.log(
     `NUR AI PRO іске қосылды: ${PORT}`
   );
