@@ -1,0 +1,41 @@
+name: NUR AI Gemini Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test Gemini API
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node -e '
+          const { GoogleGenAI } = require("@google/genai");
+          const ai = new GoogleGenAI({
+            apiKey: process.env.GEMINI_API_KEY
+          });
+          ai.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: "NUR AI PRO байланыс тесті"
+          }).then(r => {
+            console.log("GEMINI CONNECTED");
+            console.log(r.text);
+          }).catch(e => {
+            console.error(e.message);
+            process.exit(1);
+          });
+          '
