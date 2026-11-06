@@ -1,26 +1,25 @@
-function analyze(message) {
-  const text = String(message || "").trim();
 
-  return {
-    original: text,
-    length: text.length,
-    words: text.split(/\s+/).filter(Boolean).length,
-    question: text.includes("?") ||
-      text.includes("ма") ||
-      text.includes("ме"),
-    language: /[әіңғүұқөһ]/i.test(text)
-      ? "kk"
-      : "unknown",
-    valid: text.length > 0
-  };
+function classify(text) {
+  const t = String(text || "").toLowerCase();
+
+  if (/[0-9]+\s*[+\-*/]\s*[0-9]+/.test(t)) {
+    return "calculation";
+  }
+
+  if (/сәлем|салем|hello|привет/.test(t)) {
+    return "greeting";
+  }
+
+  if (/көмек|help/.test(t)) {
+    return "help";
+  }
+
+  if (/жоспар|жоспарлау/.test(t)) {
+    return "planning";
+  }
+
+  return "general";
 }
 
-function compare(a, b) {
-  return {
-    firstLength: String(a).length,
-    secondLength: String(b).length,
-    equal: String(a) === String(b)
-  };
-}
+module.exports = { classify };
 
-module.exports = { analyze, compare };
